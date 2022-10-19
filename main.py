@@ -12,9 +12,9 @@ load_dotenv()
 bot = telebot.TeleBot(os.getenv('TOKEN_TELEGRAM'))
 
 while True:
-    bot.send_message('@kypitkvsrtirykiev', get_info)
+    bot.send_message('@kypitkvsrtirykiev', get_info())
     time.sleep(60)
 
 
 if __name__ == '__main__':
-     bot.infinity_polling()
+    bot.infinity_polling()
