@@ -13,7 +13,7 @@ bot = telebot.TeleBot(os.getenv('TOKEN_TELEGRAM'))
 
 while True:
     bot.send_message('@kypitkvsrtirykiev', get_info())
-    time.sleep(60)
+    time.sleep(900)
 
 
 if __name__ == '__main__':

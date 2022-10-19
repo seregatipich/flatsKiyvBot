@@ -13,13 +13,11 @@ def get_info():
     search_response = requests.get(f'{search_url}')
     id_list = sorted(search_response.json()['items'], reverse=True)
     id_adv = id_list[0]
-    id_adv = 24322777
     id_url = f'https://developers.ria.com/dom/info/{id_adv}?api_key={api_token}'
     id_response = requests.get(f'{id_url}')
     properties = id_response.json()
     characteristcs = properties['characteristics_values']
     wall_type_id = str(characteristcs['118'])
-
     price = f"Цена: {properties['price']}$"
     district = f"Район: {properties['district_name']}"
     floor = f"Этаж: {properties['floor']}"
@@ -53,6 +51,3 @@ def get_info():
         info.append(adv_list[i])
 
     return '\n\n'.join(info)
-
-
-print(get_info())
