@@ -4,7 +4,7 @@ import time
 import telebot
 from dotenv import load_dotenv
 
-from parse import get_post_content
+from parse import get_post_content, remove_files
 
 load_dotenv()
 bot = telebot.TeleBot(os.getenv('TOKEN_TELEGRAM'))

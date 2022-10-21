@@ -74,16 +74,19 @@ def get_post_content():
             out.close()
 
         for i in range(0, len(photo_id_list)):
-            photo_id = i
             im = Image.open(f"{beautiful_photo_url}__{i}raw.webp")
             right = im.size[0]
             bottom = im.size[1]
             im1 = im.crop((left, top, right, bottom))
-            im1.save(f"{beautiful_photo_url}__{photo_id}cleaned.webp")
+            im1.save(f"photo_{i}cleaned.webp")
             os.remove(f"{beautiful_photo_url}__{i}raw.webp")
 
     get_photo()
-    return get_info()
+    return str(get_info())
 
 
-print(get_post_content())
+def remove_files():
+    fileExt = '.webp'
+    files_list = [_ for _ in os.listdir() if _.endswith(fileExt)]
+    for i in range(0, len(files_list)):
+        os.remove(files_list[i])
