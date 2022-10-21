@@ -5,6 +5,7 @@ import requests
 from dotenv import load_dotenv
 from PIL import Image, UnidentifiedImageError
 
+from post import connect
 from walls import wall_types
 
 load_dotenv()
@@ -48,7 +49,6 @@ def get_post_content():
             description = f"Описание: {properties['description']}"
         else:
             description = f"Описание: {not_specified}"
-        sep = '---------------------------------------'
 
         adv_list = [
             price,
@@ -60,10 +60,9 @@ def get_post_content():
             kitchen_square_meters,
             wall_type,
             rooms_count,
-            description,
-            sep
+            description
         ]
-
+        connect(adv_list)
         return '\n\n'.join(adv_list)
 
     def get_photo():
@@ -97,7 +96,8 @@ def get_post_content():
 
         except KeyError:
             pass
-
+    
+    if 
     try:
         get_photo()
 

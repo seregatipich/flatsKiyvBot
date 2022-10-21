@@ -29,7 +29,7 @@ while True:
         time.sleep(time_skip*2)
         logger.info('Too late/early for posts')
     else:
-        message_text = get_post_content()
+        message_text = get_post_content() + '\n---------------------------------------'
         media_list = []
 
         file_names = get_media_names()
