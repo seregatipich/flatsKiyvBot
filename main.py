@@ -26,7 +26,8 @@ while True:
     tz = pytz.timezone('Europe/Kiev')
     current_datetime = datetime.now(tz)
     if 9 > current_datetime.hour > 22:
-        time.sleep(time_skip)
+        time.sleep(time_skip*2)
+        logger.info('Too late/early for posts')
     else:
         message_text = get_post_content()
         media_list = []
@@ -35,14 +36,15 @@ while True:
         if len(file_names) <= 10:
             for i in range(0, len(file_names)):
                 file = file_names[i]
-                media_list.append(telebot.types.InputMediaPhoto(open(file, 'rb')))
+                media_list.append(
+                    telebot.types.InputMediaPhoto(open(file, 'rb')))
 
             try:
                 bot.send_media_group('@kypitkvsrtirykiev', media_list)
                 bot.send_message('@kypitkvsrtirykiev', message_text)
-                logger.info('Сообщение успешно отправлено')
+                logger.info('Message sent succesfully')
             except (TypeError, NameError, AttributeError, Exception) as error:
-                message = f'Ошибка отправки сообщения: {error}'
+                message = f'Message sending error: {error}'
                 logger.error(message)
 
             remove_files()
