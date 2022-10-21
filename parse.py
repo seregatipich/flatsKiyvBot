@@ -2,7 +2,7 @@ import os
 
 import requests
 from dotenv import load_dotenv
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 from walls import wall_types
 
@@ -11,7 +11,7 @@ api_token = os.getenv('TOKEN_RIA')
 
 
 def get_post_content():
-    search_url = f'https://developers.ria.com/dom/search?api_key={api_token}&category=1&realty_type=2&operation_type=1&state_id=10&city_id=10&exclude_agencies=1'
+    search_url = f'https://developers.ria.com/dom/search?api_key={api_token}&category=1&realty_type=2&operation_type=1&state_id=10&city_id=10&with_photo=True&exclude_agencies=10'
     search_response = requests.get(f'{search_url}')
     id_list = sorted(search_response.json()['items'], reverse=True)
     id_adv = id_list[0]
@@ -42,6 +42,7 @@ def get_post_content():
             description = f"Описание: {properties['description']}"
         else:
             description = f"Описание: {not_specified}"
+        sep = '---------------------------------------'
 
         adv_list = [
             price,
@@ -53,8 +54,10 @@ def get_post_content():
             kitchen_square_meters,
             wall_type,
             rooms_count,
-            description
+            description,
+            sep
         ]
+
         return '\n\n'.join(adv_list)
 
     def get_photo():
@@ -64,29 +67,47 @@ def get_post_content():
         response = requests.get(id_url).json()
         beautiful_photo_url = response['beautiful_url'].replace(
             f'-{id_adv}', '').replace('.html', '')
-        photo_id_list = list(response['photos'].keys())
-        for i in range(0, len(photo_id_list)):
-            photo_id = photo_id_list[i]
-            img_url = f"https://cdn.riastatic.com/photosnew/dom/photo/{beautiful_photo_url}__{photo_id}xg.webp"
-            p = requests.get(img_url)
-            out = open(f"{beautiful_photo_url}__{i}raw.webp", "wb")
-            out.write(p.content)
-            out.close()
+        try:
+            photo_id_list = list(response['photos'].keys())
+            photo_amount = len(photo_id_list)
+            if len(photo_id_list) > 10:
+                photo_amount = 9
 
-        for i in range(0, len(photo_id_list)):
-            im = Image.open(f"{beautiful_photo_url}__{i}raw.webp")
-            right = im.size[0]
-            bottom = im.size[1]
-            im1 = im.crop((left, top, right, bottom))
-            im1.save(f"photo_{i}cleaned.webp")
-            os.remove(f"{beautiful_photo_url}__{i}raw.webp")
+            for i in range(0, photo_amount):  # photos downloading
+                img_url = f"https://cdn.riastatic.com/photosnew/dom/photo/{beautiful_photo_url}__{photo_id_list[i]}xg.webp"
+                p = requests.get(img_url)
+                out = open(f"{beautiful_photo_url}__{i}raw.webp", "wb")
+                out.write(p.content)
+                out.close()
 
-    get_photo()
-    return str(get_info())
+            for i in range(0, photo_amount):  # photos cropping
+                im = Image.open(f"{beautiful_photo_url}__{i}raw.webp")
+                right = im.size[0]
+                bottom = im.size[1]
+                im1 = im.crop((left, top, right, bottom))
+                im1.save(f"photo_{i}cleaned.webp")
+                os.remove(f"{beautiful_photo_url}__{i}raw.webp")
+
+        except KeyError:
+            pass
+
+    try:
+        get_photo()
+
+        return str(get_info())
+
+    except UnidentifiedImageError:
+        pass
+
+
+def get_media_names():
+    fileExt = '.webp'
+    files_list = [_ for _ in os.listdir() if _.endswith(fileExt)]
+
+    return files_list
 
 
 def remove_files():
-    fileExt = '.webp'
-    files_list = [_ for _ in os.listdir() if _.endswith(fileExt)]
+    files_list = get_media_names()
     for i in range(0, len(files_list)):
         os.remove(files_list[i])

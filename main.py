@@ -1,18 +1,56 @@
+import logging
 import os
+import sys
 import time
+from datetime import datetime
 
+import pytz
 import telebot
 from dotenv import load_dotenv
 
-from parse import get_post_content, remove_files
+from parse import get_media_names, get_post_content, remove_files
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+streamHandler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+streamHandler.setFormatter(formatter)
+logger.addHandler(streamHandler)
 
 load_dotenv()
 bot = telebot.TeleBot(os.getenv('TOKEN_TELEGRAM'))
+time_skip = 1800
 
 
 while True:
-    bot.send_photo('@kypitkvsrtirykiev', 'realty-prodaja-kvartira-kiev-vinogradar-tiraspolskaya-ulitsa__0cleaned.webp', get_post_content())
-    time.sleep(900)
+    tz = pytz.timezone('Europe/Kiev')
+    current_datetime = datetime.now(tz)
+    if 9 > current_datetime.hour > 22:
+        time.sleep(time_skip)
+    else:
+        message_text = get_post_content()
+        media_list = []
+
+        file_names = get_media_names()
+        if len(file_names) <= 10:
+            for i in range(0, len(file_names)):
+                file = file_names[i]
+                media_list.append(telebot.types.InputMediaPhoto(open(file, 'rb')))
+
+            try:
+                bot.send_media_group('@kypitkvsrtirykiev', media_list)
+                bot.send_message('@kypitkvsrtirykiev', message_text)
+                logger.info('Сообщение успешно отправлено')
+            except (TypeError, NameError, AttributeError, Exception) as error:
+                message = f'Ошибка отправки сообщения: {error}'
+                logger.error(message)
+
+            remove_files()
+        else:
+            remove_files()
+            pass
+
+        time.sleep(time_skip)
 
 
 if __name__ == '__main__':
