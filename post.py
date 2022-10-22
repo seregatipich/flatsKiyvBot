@@ -11,7 +11,7 @@ def connect(adv_list):
         conn.commit()
         cur.close()
     except sqlite3.IntegrityError as error:
-        print(error)
+        return 'recurring post'
 
 # connect()
 
@@ -29,6 +29,7 @@ def select():
         return str(error)
 
 # select()
+
 
 def drop():
     conn = sqlite3.connect('posts.db')

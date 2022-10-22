@@ -29,31 +29,21 @@ while True:
         time.sleep(time_skip*2)
         logger.info('Too late/early for posts')
     else:
-        # try:
-        message_text = str(get_post_content()) + '\n---------------------------------------'
-        # except TypeError as error:
-            # print(error)
+        message_text = str(get_post_content())
         media_list = []
-
         file_names = get_media_names()
-        if len(file_names) <= 10:
-            for i in range(0, len(file_names)):
-                file = file_names[i]
-                media_list.append(
-                    telebot.types.InputMediaPhoto(open(file, 'rb')))
-
-            try:
-                bot.send_media_group('@kypitkvsrtirykiev', media_list)
-                bot.send_message('@kypitkvsrtirykiev', message_text)
-                logger.info('Message sent succesfully')
-            except (TypeError, NameError, AttributeError, Exception) as error:
-                message = f'Message sending error: {error}'
-                logger.error(message)
-
-            remove_files()
-        else:
-            remove_files()
-            pass
+        for i in range(0, len(file_names)):
+            file = file_names[i]
+            media_list.append(
+                telebot.types.InputMediaPhoto(open(file, 'rb')))
+        try:
+            bot.send_media_group('@kypitkvsrtirykiev', media_list)
+            bot.send_message('@kypitkvsrtirykiev', message_text)
+            logger.info('Message sent succesfully')
+        except (TypeError, NameError, AttributeError, Exception) as error:
+            message = f'Message sending error: {error}'
+            logger.error(message)
+        remove_files()
 
         time.sleep(time_skip)
 
