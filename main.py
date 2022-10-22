@@ -29,7 +29,10 @@ while True:
         time.sleep(time_skip*2)
         logger.info('Too late/early for posts')
     else:
-        message_text = get_post_content() + '\n---------------------------------------'
+        # try:
+        message_text = str(get_post_content()) + '\n---------------------------------------'
+        # except TypeError as error:
+            # print(error)
         media_list = []
 
         file_names = get_media_names()

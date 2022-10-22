@@ -17,7 +17,8 @@ def get_post_content():
     search_url = f'https://developers.ria.com/dom/search?api_key={api_token}&category=1&realty_type=2&operation_type=1&state_id=10&city_id=10&with_photo=True&exclude_agencies=10'
     search_response = requests.get(f'{search_url}')
     id_list = sorted(search_response.json()['items'], reverse=True)
-    id_adv = id_list[0]
+    id_adv = str(id_list[0])
+    # id_adv = '22476055'
 
     def get_info():
         '''
@@ -30,6 +31,7 @@ def get_post_content():
         properties = id_response.json()
         characteristcs = properties['characteristics_values']
         wall_type_id = str(characteristcs['118'])
+
         price = f"Цена: {properties['price']}$"
         district = f"Район: {properties['district_name']}"
         floor = f"Этаж: {properties['floor']}"
@@ -51,6 +53,7 @@ def get_post_content():
             description = f"Описание: {not_specified}"
 
         adv_list = [
+            id_adv,
             price,
             district,
             floor,
@@ -62,7 +65,10 @@ def get_post_content():
             rooms_count,
             description
         ]
-        connect(adv_list)
+        # if connect(adv_list) == 'error':
+        #     return 'error'
+        # else:
+        print('\n\n'.join(adv_list))
         return '\n\n'.join(adv_list)
 
     def get_photo():
@@ -96,13 +102,10 @@ def get_post_content():
 
         except KeyError:
             pass
-    
-    if 
+
     try:
         get_photo()
-
         return str(get_info())
-
     except UnidentifiedImageError:
         pass
 
