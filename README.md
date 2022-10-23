@@ -9,9 +9,9 @@
 ### Installation:
 - Clone the repo and activate virtual env.
 - Install dependencies from requirements.txt
-'''
+```
 pip install -r requirements.txt
-'''
+``` 
 - Run main.py
 ### Author
 seregatipich
