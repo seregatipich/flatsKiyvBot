@@ -5,7 +5,7 @@ import requests
 from dotenv import load_dotenv
 from PIL import Image, UnidentifiedImageError
 
-from post import connect
+from unique_post import uniqueness_test
 from walls import wall_types
 
 load_dotenv()
@@ -49,7 +49,7 @@ def get_info(id_adv):
     wall_type = f"Тип стен: {wall_types[wall_type_id]['name']}"
     rooms_count = f"Количество комнат: {properties['rooms_count']}"
     if properties['description'] != '':
-        description = f"Описание: {properties['description']}"
+        description = f"Описание:\n{properties['description']}"
     else:
         description = f"Описание: {not_specified}"
 
@@ -66,10 +66,9 @@ def get_info(id_adv):
         rooms_count,
         description
     ]
-    if connect(adv_list) == 'recurring post':
+    if uniqueness_test(adv_list) == 'recurring post':
         return 'recurring post'
 
-    print('\n\n'.join(adv_list))
     adv_list[0] = 'Назовите этот ID: ' + adv_list[0]
     return '\n\n'.join(adv_list)
 
@@ -86,7 +85,7 @@ def get_photo(id_adv):
         photo_id_list = list(response['photos'].keys())
         photo_amount = len(photo_id_list)
         if len(photo_id_list) > 10:
-            photo_amount = 9
+            photo_amount = 8
 
         for i in range(0, photo_amount):  # photos downloading
             img_url = f"https://cdn.riastatic.com/photosnew/dom/photo/{beautiful_photo_url}__{photo_id_list[i]}xg.webp"
@@ -123,6 +122,7 @@ def remove_files():
 
 
 def get_post_content():
+    '''main post creation logic'''
     id_adv = get_adv_id()
     text = ''
     try:
@@ -130,6 +130,12 @@ def get_post_content():
         if text == 'recurring post':
             pass
         else:
+            telephone = '\nТелефон/Вайбер: 0933030690'
+            messenger_links = '\nТелеграмм: @kkkinua\nВотсапп: kkkinua'
+            social_media = '\nhttps://instagram.com/kypit_kvartiry_kiev/'
+            text += telephone
+            text += messenger_links
+            text += social_media
             text += '\n---------------------------------------'
             get_photo(id_adv)
             return text
