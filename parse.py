@@ -5,7 +5,7 @@ import requests
 from dotenv import load_dotenv
 from PIL import Image, UnidentifiedImageError
 
-from unique_post import uniqueness_test
+from post_info import uniqueness_test
 from walls import wall_types
 
 load_dotenv()
@@ -52,6 +52,14 @@ def get_info(id_adv):
         description = f"Описание:\n{properties['description']}"
     else:
         description = f"Описание: {not_specified}"
+    contacts = [
+        'Контакты:\n'
+        'Телефон/Вайбер: 0933030690',
+        'Телеграмм: @kkkinua',
+        'Вотсапп: kkkinua',
+        'Инст: https://instagram.com/kypit_kvartiry_kiev/',
+        '---------------------------------------'
+    ]
 
     adv_list = [
         id_adv,
@@ -66,10 +74,12 @@ def get_info(id_adv):
         rooms_count,
         description
     ]
+
     if uniqueness_test(adv_list) == 'recurring post':
         return 'recurring post'
 
     adv_list[0] = 'Назовите этот ID: ' + adv_list[0]
+    adv_list.append('\n'.join(contacts))
     return '\n\n'.join(adv_list)
 
 
@@ -130,13 +140,6 @@ def get_post_content():
         if text == 'recurring post':
             pass
         else:
-            telephone = '\nТелефон/Вайбер: 0933030690'
-            messenger_links = '\nТелеграмм: @kkkinua\nВотсапп: kkkinua'
-            social_media = '\nhttps://instagram.com/kypit_kvartiry_kiev/'
-            text += telephone
-            text += messenger_links
-            text += social_media
-            text += '\n---------------------------------------'
             get_photo(id_adv)
             return text
     except UnidentifiedImageError:

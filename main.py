@@ -19,7 +19,7 @@ logger.addHandler(streamHandler)
 
 load_dotenv()
 bot = telebot.TeleBot(os.getenv('TOKEN_TELEGRAM'))
-time_skip = 1800
+time_skip = 1800    
 
 
 while True:
