@@ -32,13 +32,16 @@ def get_info(id_adv):
     id_response = requests.get(f'{id_url}')
     properties = id_response.json()
     characteristcs = properties['characteristics_values']
-    wall_type_id = str(characteristcs['118'])
 
-    price = f"Цена: {properties['price']}$"
-    district = f"Район: {properties['district_name']}"
-    floor = f"Этаж: {properties['floor']}"
-    floor_count = f"Этажность: {properties['floors_count']}"
-    total_square_meters = f"Общая площадь: {properties['total_square_meters']}м²"
+    try:
+        price = f"Цена: {properties['price']}$"
+        district = f"Район: {properties['district_name']}"
+        floor = f"Этаж: {properties['floor']}"
+        floor_count = f"Этажность: {properties['floors_count']}"
+        total_square_meters = f"Общая площадь: {properties['total_square_meters']}м²"
+    except KeyError:
+        return 'bad advertisement'
+
     try:
         living_square_meters = f"Жилая площадь: {characteristcs['216']}м²"
     except KeyError:
@@ -47,7 +50,8 @@ def get_info(id_adv):
         kitchen_square_meters = f"Площадь кухни: {characteristcs['218']}м²"
     except KeyError:
         kitchen_square_meters = f"Площадь кухни: {not_specified}"
-    wall_type = f"Тип стен: {wall_types[wall_type_id]['name']}"
+
+    wall_type = f"Тип стен: {properties['wall_type']}"
     rooms_count = f"Количество комнат: {properties['rooms_count']}"
     if properties['description'] != '':
         description = f"Описание:\n{properties['description']}"
@@ -139,7 +143,7 @@ def get_post_content(type):
     text = ''
     try:
         text = get_info(id_adv)
-        if text == 'recurring post':
+        if text == 'recurring post' or text == 'bad advertisement':
             pass
         else:
             get_photo(id_adv)
