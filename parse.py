@@ -12,9 +12,10 @@ load_dotenv()
 api_token = os.getenv('TOKEN_RIA')
 
 
-def get_adv_id():
+def get_adv_id(op_type):
     '''Content recieving from ria.com API'''
-    search_url = f'https://developers.ria.com/dom/search?api_key={api_token}&category=1&realty_type=2&operation_type=1&state_id=10&city_id=10&with_photo=True&exclude_agencies=10'
+    print(op_type, 'get')
+    search_url = f'https://developers.ria.com/dom/search?api_key={api_token}&category=1&realty_type=2&operation_type={op_type}&state_id=10&city_id=10&with_photo=True&exclude_agencies=10'
     search_response = requests.get(f'{search_url}')
     id_list = sorted(search_response.json()['items'], reverse=True)
     id_adv = str(id_list[0])
@@ -131,9 +132,10 @@ def remove_files():
         os.remove(files_list[i])
 
 
-def get_post_content():
+def get_post_content(type):
     '''main post creation logic'''
-    id_adv = get_adv_id()
+    op_type = type
+    id_adv = get_adv_id(op_type)
     text = ''
     try:
         text = get_info(id_adv)

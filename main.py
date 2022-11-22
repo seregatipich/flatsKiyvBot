@@ -19,33 +19,38 @@ logger.addHandler(streamHandler)
 
 load_dotenv()
 bot = telebot.TeleBot(os.getenv('TOKEN_TELEGRAM'))
-time_skip = 1800    
+time_skip: int = 1800
+operations: dict = {'sell': 1, 'rent': 3}
+channels: dict = {'sell': '@kypitkvsrtirykiev', 'rent': '@kkkarenda'}   
 
 
 while True:
-    tz = pytz.timezone('Europe/Kiev')
-    current_datetime = datetime.now(tz)
-    if 9 > current_datetime.hour > 22:
-        time.sleep(time_skip*2)
-        logger.info('Too late/early for posts')
-    else:
-        message_text = str(get_post_content())
-        media_list = []
-        file_names = get_media_names()
-        for i in range(0, len(file_names)):
-            file = file_names[i]
-            media_list.append(
-                telebot.types.InputMediaPhoto(open(file, 'rb')))
-        try:
-            bot.send_media_group('@kypitkvsrtirykiev', media_list)
-            bot.send_message('@kypitkvsrtirykiev', message_text)
-            logger.info('Message sent succesfully')
-        except (TypeError, NameError, AttributeError, Exception) as error:
-            message = f'Message sending error: {error}'
-            logger.error(message)
-        remove_files()
+    for i in operations:
+        tz = pytz.timezone('Europe/Kiev')
+        current_datetime = datetime.now(tz)
+        if 9 > current_datetime.hour > 22:
+            time.sleep(time_skip*2)
+            logger.info('Too late/early for posts')
+        else:
+            message_text = str(get_post_content(type=operations[i]))
+            media_list = []
+            file_names = get_media_names()
+            for a in range(0, len(file_names)):
+                file = file_names[a]
+                media_list.append(
+                    telebot.types.InputMediaPhoto(open(file, 'rb')))
+            try:
+                recipient = channels[i]
+                bot.send_media_group(recipient, media_list)
+                bot.send_message(recipient, message_text)
+                logger.info(f'Message to {recipient} has been sent succesfully')
+            except (TypeError, NameError, AttributeError, Exception) as error:
+                message = f'Message sending error: {error}'
+                logger.error(message)
+            remove_files()
+            time.sleep(time_skip/120)
 
-        time.sleep(time_skip)
+    time.sleep(time_skip)
 
 
 if __name__ == '__main__':
