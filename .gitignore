@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # Database files
-.db
+posts.db
